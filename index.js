@@ -1,0 +1,13 @@
+import{a as u,i,S as p}from"./assets/vendor-B3IAfeER.js";(function(){const s=document.createElement("link").relList;if(s&&s.supports&&s.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))a(e);new MutationObserver(e=>{for(const r of e)if(r.type==="childList")for(const n of r.addedNodes)n.tagName==="LINK"&&n.rel==="modulepreload"&&a(n)}).observe(document,{childList:!0,subtree:!0});function t(e){const r={};return e.integrity&&(r.integrity=e.integrity),e.referrerPolicy&&(r.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?r.credentials="include":e.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function a(e){if(e.ep)return;e.ep=!0;const r=t(e);fetch(e.href,r)}})();function d(o){return u.get("https://pixabay.com/api/",{params:{key:"53374689-de9604de74fdd47daed383deb",q:o,image_type:"photo",orientation:"horizontal",safesearch:!0}}).then(t=>!t.data.hits||t.data.hits.length===0?(i.info({message:"Sorry, there are no images matching your search query. Please try again!",backgroundColor:"#ef4040",position:"topRight",timeout:3e3}),[]):t.data.hits).catch(t=>(console.error(t),i.error({message:"Something went wrong. Please try again later.",backgroundColor:"#ef4040",position:"topRight",timeout:4e3}),[]))}const g=new p(".gallery-link",{captionsData:"alt",captionPosition:"bottom",captionDelay:500}),c=document.querySelector(".gallery"),l=document.querySelector(".loader");function f({webformatURL:o,largeImageURL:s,tags:t,likes:a,views:e,comments:r,downloads:n}){return`     
+      <li class="gallery-card">
+        <a href="${s}" class="gallery-link">
+          <img src="${o}" alt="${t}" class="gallery-image" />
+        </a>
+        <div class="gallery-stats">
+          <p><strong>Likes</strong> <span class="likes">${a}</span></p>
+          <p><strong>Views</strong> <span class="views">${e}</span></p>
+          <p><strong>Comments</strong> <span class="comments">${r}</span></p>
+          <p><strong>Downloads</strong> <span class="downloads">${n}</span></p>
+        </div>
+      </li>`}function m(o){return o.map(f).join("")}function y(o){c.innerHTML=m(o),g.refresh()}function h(){c.innerHTML=""}function b(){l&&(l.style.display="block")}function L(){l&&(l.style.display="none")}const P=document.querySelector(".form");P.addEventListener("submit",o=>{o.preventDefault();const s=o.target.elements["search-text"].value.trim();if(!s){i.warning({message:"Please, enter something!",backgroundColor:"#ef4040",position:"topRight"});return}h(),b(),d(s).then(t=>{y(t)}).catch(t=>{console.error(t),i.error({message:"Error! Please try again!",backgroundColor:"#ef4040",position:"topRight"})}).finally(()=>{L()}),o.target.reset()});
+//# sourceMappingURL=index.js.map
