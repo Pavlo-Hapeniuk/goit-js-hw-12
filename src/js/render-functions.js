@@ -22,7 +22,7 @@ function cardTemplate({
   return `     
       <li class="gallery-card">
         <a href="${largeImageURL}" class="gallery-link">
-          <img src="${webformatURL}" alt="${tags}" class="gallery-image" />
+          <img src="${webformatURL}" alt="${tags}" loading="lazy" class="gallery-image" />
         </a>
         <div class="gallery-stats">
           <p><strong>Likes</strong> <span class="likes">${likes}</span></p>
@@ -37,8 +37,13 @@ function cardsTemplate(cards) {
   return cards.map(cardTemplate).join('');
 }
 
-export function createGallery(cards) {
-  gallery.innerHTML = cardsTemplate(cards);
+export function createGallery(cards, replace = false) {
+  if (replace) {
+    gallery.innerHTML = cardsTemplate(cards);
+  } else {
+    gallery.insertAdjacentHTML('beforeend', cardsTemplate(cards));
+  }
+
   simplelightbox.refresh();
 }
 
@@ -53,3 +58,7 @@ export function showLoader() {
 export function hideLoader() {
   if (loader) loader.style.display = 'none';
 }
+
+export function showLoadMoreButton() {}
+
+export function hideLoadMoreButton() {}

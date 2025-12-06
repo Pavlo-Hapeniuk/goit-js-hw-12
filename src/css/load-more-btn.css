@@ -1,0 +1,15 @@
+.js-btn-load {
+  display: block;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
+
+  width: 125px;
+  height: 40px;
+  border-radius: 8px;
+  padding: 8px 16px;
+
+  background: #4e75ff;
+
+  margin: 32px auto 44px;
+}

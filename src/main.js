@@ -1,19 +1,27 @@
-import axios from 'axios';
-
 import { getImagesByQuery } from './js/pixabay-api';
 import {
   createGallery,
   clearGallery,
   showLoader,
   hideLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton,
 } from './js/render-functions';
 import iziToast from 'izitoast';
 
 const formElem = document.querySelector('.form');
+const loadMoreBtn = document.querySelector('.js-btn-load');
 
-formElem.addEventListener('submit', e => {
+let searchText;
+let currentPage;
+
+formElem.addEventListener('submit', async e => {
   e.preventDefault();
-  const searchText = e.target.elements['search-text'].value.trim();
+
+  const formData = new FormData(e.target);
+  searchText = formData.get('search-text').trim();
+  currentPage = 1;
+
   if (!searchText) {
     iziToast.warning({
       message: `Please, enter something!`,
@@ -26,21 +34,37 @@ formElem.addEventListener('submit', e => {
   clearGallery();
   showLoader();
 
-  getImagesByQuery(searchText)
-    .then(hits => {
-      createGallery(hits);
-    })
-    .catch(error => {
-      console.error(error);
-      iziToast.error({
-        message: `Error! Please try again!`,
-        backgroundColor: '#ef4040',
-        position: 'topRight',
-      });
-    })
-    .finally(() => {
-      hideLoader();
+  try {
+    const hits = await getImagesByQuery(searchText, currentPage);
+    await createGallery(hits, true);
+  } catch {
+    iziToast.error({
+      message: `Error! Please try again!`,
+      backgroundColor: '#ef4040',
+      position: 'topRight',
     });
+  } finally {
+    hideLoader();
+  }
 
   e.target.reset();
+});
+
+loadMoreBtn.addEventListener('click', async () => {
+  currentPage += 1;
+
+  showLoader();
+
+  try {
+    const hits = await getImagesByQuery(searchText, currentPage);
+    await createGallery(hits, false);
+  } catch {
+    iziToast.error({
+      message: `Error! Please try again!`,
+      backgroundColor: '#ef4040',
+      position: 'topRight',
+    });
+  } finally {
+    hideLoader();
+  }
 });
