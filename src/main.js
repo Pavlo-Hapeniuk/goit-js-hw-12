@@ -1,4 +1,4 @@
-import { getImagesByQuery } from './js/pixabay-api';
+import { getImagesByQuery, PER_PAGE } from './js/pixabay-api';
 import {
   createGallery,
   clearGallery,
@@ -14,6 +14,9 @@ const loadMoreBtn = document.querySelector('.js-btn-load');
 
 let searchText;
 let currentPage;
+let totalPages;
+
+hideLoadMoreButton(loadMoreBtn);
 
 formElem.addEventListener('submit', async e => {
   e.preventDefault();
@@ -33,10 +36,30 @@ formElem.addEventListener('submit', async e => {
 
   clearGallery();
   showLoader();
+  hideLoadMoreButton(loadMoreBtn);
 
   try {
-    const hits = await getImagesByQuery(searchText, currentPage);
+    const { hits, totalHits } = await getImagesByQuery(searchText, currentPage);
     await createGallery(hits, true);
+
+    totalPages = Math.ceil(totalHits / PER_PAGE);
+
+    if (hits.length === 0) {
+      iziToast.info({
+        message: `No results found.`,
+        backgroundColor: '#ef4040',
+        position: 'topRight',
+      });
+    } else if (currentPage >= totalPages) {
+      hideLoadMoreButton(loadMoreBtn);
+      iziToast.info({
+        message: `We're sorry, but you've reached the end of search results.`,
+        backgroundColor: '#67dadcff',
+        position: 'topRight',
+      });
+    } else {
+      showLoadMoreButton(loadMoreBtn);
+    }
   } catch {
     iziToast.error({
       message: `Error! Please try again!`,
@@ -52,12 +75,21 @@ formElem.addEventListener('submit', async e => {
 
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
-
   showLoader();
 
   try {
-    const hits = await getImagesByQuery(searchText, currentPage);
+    const { hits } = await getImagesByQuery(searchText, currentPage);
+
     await createGallery(hits, false);
+
+    if (hits.length === 0 || currentPage >= totalPages) {
+      hideLoadMoreButton(loadMoreBtn);
+      iziToast.info({
+        message: `We're sorry, but you've reached the end of search results.`,
+        backgroundColor: '#67dadcff',
+        position: 'topRight',
+      });
+    }
   } catch {
     iziToast.error({
       message: `Error! Please try again!`,

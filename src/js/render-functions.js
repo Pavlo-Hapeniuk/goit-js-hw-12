@@ -8,7 +8,7 @@ const simplelightbox = new SimpleLightbox('.gallery-link', {
 });
 
 const gallery = document.querySelector('.gallery');
-const loader = document.querySelector('.loader');
+const loader = document.querySelector('.load-more-wrapper .loader');
 
 function cardTemplate({
   webformatURL,
@@ -22,7 +22,7 @@ function cardTemplate({
   return `     
       <li class="gallery-card">
         <a href="${largeImageURL}" class="gallery-link">
-          <img src="${webformatURL}" alt="${tags}" loading="lazy" class="gallery-image" />
+          <img src="${webformatURL}" alt="${tags}" loading="lazy" class="gallery-image" width="360" height="200"/>
         </a>
         <div class="gallery-stats">
           <p><strong>Likes</strong> <span class="likes">${likes}</span></p>
@@ -52,13 +52,17 @@ export function clearGallery() {
 }
 
 export function showLoader() {
-  if (loader) loader.style.display = 'block';
+  if (loader) loader.classList.remove('hidden');
 }
 
 export function hideLoader() {
-  if (loader) loader.style.display = 'none';
+  if (loader) loader.classList.add('hidden');
 }
 
-export function showLoadMoreButton() {}
+export function showLoadMoreButton(loadMore) {
+  loadMore.classList.remove('hidden');
+}
 
-export function hideLoadMoreButton() {}
+export function hideLoadMoreButton(loadMore) {
+  loadMore.classList.add('hidden');
+}
