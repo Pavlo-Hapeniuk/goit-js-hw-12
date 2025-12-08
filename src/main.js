@@ -40,7 +40,6 @@ formElem.addEventListener('submit', async e => {
 
   try {
     const { hits, totalHits } = await getImagesByQuery(searchText, currentPage);
-    await createGallery(hits, true);
 
     totalPages = Math.ceil(totalHits / PER_PAGE);
 
@@ -50,7 +49,13 @@ formElem.addEventListener('submit', async e => {
         backgroundColor: '#ef4040',
         position: 'topRight',
       });
-    } else if (currentPage >= totalPages) {
+
+      return;
+    }
+
+    await createGallery(hits, true);
+
+    if (currentPage >= totalPages) {
       hideLoadMoreButton(loadMoreBtn);
       iziToast.info({
         message: `We're sorry, but you've reached the end of search results.`,
@@ -76,28 +81,29 @@ formElem.addEventListener('submit', async e => {
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
   showLoader();
+  hideLoadMoreButton(loadMoreBtn);
 
   try {
     const { hits } = await getImagesByQuery(searchText, currentPage);
 
-    if (hits.length === 0 || currentPage >= totalPages) {
-      hideLoadMoreButton(loadMoreBtn);
-      iziToast.info({
-        message: `We're sorry, but you've reached the end of search results.`,
-        backgroundColor: '#67dadcff',
-        position: 'topRight',
-      });
-    } else {
+    if (hits.length > 0) {
       await createGallery(hits, false);
 
       const gallery = document.querySelector('.gallery');
       const cardHeight =
         gallery.firstElementChild.getBoundingClientRect().height;
+      window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
+    }
 
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
+    if (hits.length === 0 || currentPage >= totalPages) {
+      iziToast.info({
+        message: `We're sorry, but you've reached the end of search results.`,
+        backgroundColor: '#67dadcff',
+        position: 'topRight',
       });
+      hideLoadMoreButton(loadMoreBtn);
+    } else {
+      showLoadMoreButton(loadMoreBtn);
     }
   } catch {
     iziToast.error({
@@ -105,6 +111,7 @@ loadMoreBtn.addEventListener('click', async () => {
       backgroundColor: '#ef4040',
       position: 'topRight',
     });
+    showLoadMoreButton(loadMoreBtn);
   } finally {
     hideLoader();
   }
