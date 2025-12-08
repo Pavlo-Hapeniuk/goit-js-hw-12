@@ -80,14 +80,23 @@ loadMoreBtn.addEventListener('click', async () => {
   try {
     const { hits } = await getImagesByQuery(searchText, currentPage);
 
-    await createGallery(hits, false);
-
     if (hits.length === 0 || currentPage >= totalPages) {
       hideLoadMoreButton(loadMoreBtn);
       iziToast.info({
         message: `We're sorry, but you've reached the end of search results.`,
         backgroundColor: '#67dadcff',
         position: 'topRight',
+      });
+    } else {
+      await createGallery(hits, false);
+
+      const gallery = document.querySelector('.gallery');
+      const cardHeight =
+        gallery.firstElementChild.getBoundingClientRect().height;
+
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
       });
     }
   } catch {
